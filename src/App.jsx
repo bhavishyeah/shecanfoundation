@@ -9,12 +9,14 @@ import DonatePage from './pages/DonatePage'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
+import ScrollToTop from './utils/ScrollToTop'
 
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <Toaster
             position="top-right"
             toastOptions={{

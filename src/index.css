@@ -1569,14 +1569,12 @@ html {
 .navbar-shell-scrolled .navbar-shell-blur {
   opacity: 1;
   background: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(5.8px);
   -webkit-backdrop-filter: blur(5.8px);
 }
 
 .dark .navbar-shell-scrolled .navbar-shell-blur {
   background: rgba(69, 49, 39, 0.22);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.22);
   backdrop-filter: blur(5.8px);
   -webkit-backdrop-filter: blur(5.8px);
 }
