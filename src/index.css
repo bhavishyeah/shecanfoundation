@@ -1554,6 +1554,8 @@ html {
   opacity: 0;
   pointer-events: none;
   border-radius: 999px;
+    isolation: isolate; /* ← add this */
+
   background: transparent;
   box-shadow: none;
   backdrop-filter: blur(0);
