@@ -22,6 +22,13 @@
 }
 
 @font-face {
+  font-family: 'Telegrafbold';
+  src: url('/fonts/Telegraf UltraBold 800.otf') format('opentype');
+  font-display: swap;
+}
+
+
+@font-face {
   font-family: 'League Spartan';
   src: url('/fonts/LeagueSpartan-Bold.ttf') format('truetype');
   font-display: swap;
@@ -51,18 +58,18 @@
     box-sizing: border-box;
   }
 
- html {
+/* Light mode scrollbar */
+html {
   scrollbar-width: thin;
   scrollbar-color: #ff592c #fff4e8;
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
   background: #fff4e8;
-  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -75,12 +82,30 @@
   background: linear-gradient(180deg, #ff6a3d 0%, #ff9a70 100%);
 }
 
+/* Dark mode scrollbar */
+html.dark {
+  scrollbar-color: rgb(255, 255, 255) #1e120c;
+}
 
+html.dark ::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  border: 2px solid #1e120c;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.38);
+}
   body {
     margin: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
     background: var(--color-bg);
     color: var(--color-text);
+    overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
@@ -112,6 +137,132 @@
   }
 }
 
+/* =============================
+   HEROINTROCARD — Decorative Hearts
+============================= */
+
+/* Hidden state — before scrolled into view */
+.hero-heart-brwn,
+.hero-heart-orng {
+  opacity: 0 !important;
+  transform: scale(0.3) rotate(var(--heart-rotate));
+  transition: none;
+}
+
+/* Visible state — triggered by IntersectionObserver */
+.heart-visible.hero-heart-brwn {
+  animation:
+    heartPopIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both,
+    heartSpin  18s linear 0.7s infinite;
+  opacity: 0.92 !important;
+}
+
+.heart-visible.hero-heart-orng {
+  animation:
+    heartPopIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both,
+    heartSpin  22s linear 0.85s infinite reverse;
+  opacity: 0.95 !important;
+}
+
+/* Pop keyframe */
+@keyframes heartPopIn {
+  0%   { opacity: 0;    transform: scale(0.3)  rotate(var(--heart-rotate)); }
+  60%  { opacity: 1;    transform: scale(1.18) rotate(var(--heart-rotate)); }
+  80%  {                transform: scale(0.93) rotate(var(--heart-rotate)); }
+  100% { opacity: 1;    transform: scale(1)    rotate(var(--heart-rotate)); }
+}
+
+/* Infinite spin */
+@keyframes heartSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Brown heart sizing & position */
+.hero-heart-brwn {
+  --heart-rotate: -12deg;
+ width: clamp(120px, 13vw, 190px) !important;  /* was 90px→140px */
+  bottom: -5.5rem !important;
+  left: -5rem !important;
+  transform-origin: center center;
+}
+
+/* Orange heart sizing & position */
+.hero-heart-orng {
+  --heart-rotate: 14deg;
+  width: clamp(130px, 14vw, 200px) !important;  /* was 100px→160px */
+  top: -6.3rem !important;
+  right: -5.5rem !important;
+  transform-origin: center center;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .heart-visible.hero-heart-brwn,
+  .heart-visible.hero-heart-orng {
+    animation: none;
+    transform: scale(1);
+  }
+}
+
+/* =============================
+   ABOUT CARDS — Mobile 3D Float / Levitate
+============================= */
+
+@media (hover: none) {
+
+  /* Active card: deep 3D tilt toward viewer */
+  .about-card--active {
+    transform: perspective(900px) rotateX(-6deg) rotateY(5deg) scale(1.04) translateY(-6px) !important;
+    box-shadow:
+      8px 32px 60px rgba(255, 89, 44, 0.18),
+      0 12px 24px rgba(255, 89, 44, 0.10),
+      0 2px 6px rgba(0,0,0,0.06) !important;
+    border-color: rgba(255, 89, 44, 0.32) !important;
+    transition:
+      transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.45s ease !important;
+  }
+
+ 
+
+  /* Icon: continuous levitate loop while card is active */
+  .about-card--active .about-card-icon {
+    animation: iconLevitate 2.4s ease-in-out infinite;
+  }
+
+@keyframes iconLevitate {
+  0%   {
+    transform: translateX(-35%) translateY(-50%) rotate(-6deg);
+    filter: drop-shadow(0 10px 16px rgba(255, 89, 44, 0.14));
+  }
+  15%  {
+    transform: translateX(-35%) translateY(-50%) rotate(-14deg);
+    filter: drop-shadow(0 14px 18px rgba(255, 89, 44, 0.22));
+  }
+  30%  {
+    transform: translateX(-35%) translateY(-50%) rotate(2deg);
+    filter: drop-shadow(0 12px 16px rgba(255, 89, 44, 0.18));
+  }
+  45%  {
+    transform: translateX(-35%) translateY(-50%) rotate(-10deg);
+    filter: drop-shadow(0 14px 18px rgba(255, 89, 44, 0.22));
+  }
+  60%  {
+    transform: translateX(-35%) translateY(-50%) rotate(4deg);
+    filter: drop-shadow(0 12px 16px rgba(255, 89, 44, 0.18));
+  }
+  75%  {
+    transform: translateX(-35%) translateY(-50%) rotate(-8deg);
+    filter: drop-shadow(0 14px 18px rgba(255, 89, 44, 0.22));
+  }
+  100% {
+    transform: translateX(-35%) translateY(-50%) rotate(-6deg);
+    filter: drop-shadow(0 10px 16px rgba(255, 89, 44, 0.14));
+  }
+}
+}
 @layer components {
   .container-wide {
     @apply max-w-6xl mx-auto px-4 md:px-6;
@@ -268,16 +419,43 @@
   cursor: url('/pointerdark.png') 4 4, auto;
 }
 
+/* =============================
+   IMPACT — Image Marquee
+============================= */
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marqueeScroll 28s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track--reverse {
+  animation-direction: reverse;
+  animation-duration: 32s;
+}
+
+/* Pause on hover */
+.marquee-track:hover,
+.marquee-track--reverse:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .marquee-track--reverse {
+    animation: none;
+  }
+}
+
 
 /*founder quote*/
 .founder-final-wrap {
   position: relative;
-  border-radius: 2rem;
-  background: #e8dfd5;
   padding: 0.28rem;
-  box-shadow:
-    0 10px 24px rgba(75, 49, 34, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  
 }
 .founder-section {
   background-image: url('/founderbg.webp');
@@ -285,22 +463,20 @@
   background-position: center;
   background-repeat: no-repeat;
 }
+
+
+/* Make sure content sits above the overlay */
+.founder-section > * {
+  position: relative;
+  z-index: 1;
+}
 .founder-final-inner {
   position: relative;
   overflow: hidden;
   border-radius: 1.8rem;
-  background: linear-gradient(180deg, #ff62005e 0%, #e9e1d7 100%);
+  background: linear-gradient(180deg, #ff8686ce 0%, #e9e1d7 100%);
   min-height: 540px;
   padding: clamp(1.5rem, 3vw, 2.3rem);
-}
-
-.founder-final-inner::before {
-  content: '';
-  position: absolute;
-  inset: 1rem;
-  border-radius: 1.35rem;
-  box-shadow: inset 0 0 0 1px rgba(139, 106, 82, 0.05);
-  z-index: 0;
 }
 
 .founder-final-flower {
@@ -311,7 +487,7 @@
 }
 
 .founder-final-flower-top {
-  top: -1rem;
+  top: -5rem;
   left: 0.1rem;
   width: clamp(150px, 7vw, 108px);
   transform: rotate(-2deg);
@@ -319,8 +495,8 @@
 
 .founder-final-flower-mid {
   width: clamp(82px, 7vw, 108px);
-  right: -1.1rem;
-  top: 0.4rem;
+  right: -1rem;
+  top: 4rem;
   transform: rotate(8deg);
 }
 
@@ -331,40 +507,40 @@
   margin: 4.3rem auto 0;
   padding: 1.5rem 1.8rem 1.6rem;
   border-radius: 2rem;
-  background: rgba(243, 236, 228, 0.58);
 }
 
 .founder-quote-opening,
 .founder-quote-closing {
   position: absolute;
-  color: #e4541b;
+  color: #e41b1b;
   font-family: 'Cormorant Garamond', serif;
-  font-size: 5rem;
+  font-size: 7rem;
   line-height: 1;
   background: transparent;
   box-shadow: none;
 }
 
 .founder-quote-opening {
-  top: 0.95rem;
-  left: 0.9rem;
+  top: 0.5rem;
+  left: 0.1rem;
   transform: rotate(-9deg);
 }
 
 .founder-quote-closing {
   right: 1.2rem;
-  bottom: -1rem;
+  bottom: -3rem;
   transform: rotate(8deg);
 }
 
 .founder-quote-copy {
   margin: 0;
   text-align: center;
-  font-family: 'Telegraf', 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(1.5rem, 1.5vw, 1.7rem);
-  line-height: 1.95;
+  font-weight: 500;
+  font-family: 'Telegrafbold';
+  font-size: clamp(1.9rem, 1vw, 2rem);
+  line-height: 1.5;
   letter-spacing: -0.04em;
-  color: #4e4038;
+  color: #000000;
 }
 
 .founder-identity {
@@ -393,6 +569,7 @@
   font-size: 2rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  margin-top: -50px;
   color: #e0232c;
 }
 
@@ -467,24 +644,27 @@
     margin-top: 3.5rem;
     padding: 1.3rem 1.1rem 1.4rem;
     border-radius: 1.4rem;
+        width: min(100%, 92vw);   /* 👈 stops it bleeding edge-to-edge */
+
   }
 
   .founder-quote-opening,
   .founder-quote-closing {
-    font-size: 2.8rem;
+    font-size: 6rem;
   }
 
   .founder-quote-opening {
     top: -0.7rem;
-    left: 0;
+    left: -1.2rem;
   }
 
   .founder-quote-closing {
     right: 1.2rem;
-    bottom: -1rem;
+    bottom: -3rem;
   }
 
   .founder-quote-copy {
+    font-size: clamp(1.5rem, 4vw, 1.45rem)!important;  
     font-size: 1rem;
     line-height: 1.82;
   }
@@ -539,7 +719,21 @@
     font-size: 1.82rem;
   }
 }
+@media (max-width: 400px) {
+  .founder-quote-panel {
+    padding: 1rem 0.85rem 1.2rem;
+  }
 
+  .founder-quote-copy {
+    font-size: 0.9rem;
+    line-height: 1.72;
+  }
+
+  .founder-identity-name {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+  }
+}
 
 /*volunteer section*/
 
@@ -1627,4 +1821,95 @@ html {
   .navbar-reveal {
     margin-left: 1rem;
   }
+}
+
+/* ============================================
+   DARK MODE — Volunteer form refinement
+============================================ */
+
+.dark .input-field {
+  background: rgba(50, 34, 26, 0.72);
+  border-color: rgba(192, 142, 100, 0.22);
+  color: #f4e9df;
+}
+
+.dark .input-field::placeholder {
+  color: rgba(194, 170, 155, 0.55);
+}
+
+.dark .input-field:focus {
+  background: rgba(60, 40, 30, 0.85);
+  border-color: rgba(255, 89, 44, 0.55);
+  box-shadow: 0 0 0 3px rgba(255, 89, 44, 0.12);
+}
+
+.dark .volunteer-form-card {
+  background: linear-gradient(180deg, rgba(38, 26, 20, 0.92), rgba(30, 20, 15, 0.96));
+  border-color: rgba(192, 142, 100, 0.16);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.dark .volunteer-feature-card {
+  background: linear-gradient(180deg, rgba(40, 28, 22, 0.92), rgba(32, 22, 17, 0.96));
+  border-color: rgba(192, 142, 100, 0.14);
+  box-shadow:
+    0 16px 34px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark .volunteer-mini-card {
+  background: rgba(44, 30, 22, 0.85);
+  border-color: rgba(192, 142, 100, 0.12);
+  color: #c2aa9b;
+}
+
+.dark .volunteer-mini-card svg {
+  color: #d4895a;
+}
+
+/* Custom select trigger in dark mode */
+.dark .volunteer-select-trigger {
+  background: linear-gradient(180deg, rgba(50, 34, 26, 0.88), rgba(40, 28, 20, 0.92));
+  border-color: rgba(255, 89, 44, 0.22);
+  color: #f4e9df;
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark .volunteer-select-trigger:hover {
+  border-color: rgba(255, 89, 44, 0.38);
+}
+
+.dark .volunteer-select-menu {
+  background: linear-gradient(180deg, rgba(46, 30, 22, 0.98), rgba(36, 24, 18, 0.99));
+  border-color: rgba(156, 104, 63, 0.22);
+  box-shadow:
+    0 18px 36px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark .volunteer-select-option {
+  color: #c2aa9b;
+}
+
+.dark .volunteer-select-option:hover {
+  background: rgba(255, 89, 44, 0.14);
+  color: #f4a07a;
+}
+
+.dark .volunteer-select-option.is-selected {
+  background: linear-gradient(135deg, rgba(255, 89, 44, 0.18), rgba(139, 90, 60, 0.16));
+  color: #f4a07a;
+}
+
+/* textarea specifically */
+.dark textarea.input-field {
+  background: rgba(50, 34, 26, 0.72);
+  color: #f4e9df;
+}
+.dark .volunteer-main-section {
+  background: #1e120c;
 }

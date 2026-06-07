@@ -9,10 +9,6 @@ export default function Hero() {
         className="h-full w-full object-cover"
         loading="eager"
       />
-      <div
-        className="absolute inset-0"
-        style={{ background: 'rgba(25, 10, 5, 0.18)' }}
-      />
     </section>
   )
 }

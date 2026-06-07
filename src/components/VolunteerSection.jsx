@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { HeartHandshake, Users2, Sparkles, ArrowRight } from 'lucide-react'
-
+import { useTheme } from '../context/ThemeContext'
 const volunteerCards = [
   {
     icon: HeartHandshake,
     title: 'Why volunteer with us?',
     text: 'Build real community impact, support meaningful causes, and become part of a mission rooted in warmth, trust, and dignity.',
     iconColor: '#FF592C',
+        darkColor: '#ff8a5b',      // bright orange
+
     shadowBase:
       '0 14px 28px rgba(255, 89, 44, 0.08), 0 4px 10px rgba(255, 89, 44, 0.04)',
     shadowHover: 'rgba(255, 89, 44, 0.14)',
@@ -18,6 +20,8 @@ const volunteerCards = [
     title: 'Community-led impact',
     text: 'Work directly with communities and programs that need consistency, trust, and care on the ground.',
     iconColor: '#8B5A3C',
+        darkColor: '#d4895a',      // soft terracotta
+
     shadowBase:
       '0 14px 28px rgba(139, 90, 60, 0.08), 0 4px 10px rgba(139, 90, 60, 0.04)',
     shadowHover: 'rgba(139, 90, 60, 0.15)',
@@ -27,6 +31,8 @@ const volunteerCards = [
     title: 'Meaningful contribution',
     text: 'Bring your energy, time, and skills into work that creates visible and lasting change for women.',
     iconColor: '#C06A35',
+        darkColor: '#f4a96a',      // golden peach
+
     shadowBase:
       '0 14px 28px rgba(192, 106, 53, 0.08), 0 4px 10px rgba(192, 106, 53, 0.04)',
     shadowHover: 'rgba(192, 106, 53, 0.15)',
@@ -48,7 +54,10 @@ function TiltVolunteerCard({
   iconColor,
   shadowBase,
   shadowHover,
+  darkColor,
+  dark,
 }) {
+
   const [transform, setTransform] = useState(
     'perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1)'
   )
@@ -97,14 +106,15 @@ function TiltVolunteerCard({
         onMouseLeave={handleMouseLeave}
         className="relative rounded-[28px] border px-7 py-6 transition-transform duration-200 ease-out will-change-transform md:px-8 md:py-6"
         style={{
-          background:
-            'linear-gradient(180deg, rgba(255,248,241,0.98), rgba(250,243,236,0.98))',
-          borderColor: 'rgba(163, 113, 82, 0.15)',
-          transform,
-          boxShadow: shadow,
-          transformStyle: 'preserve-3d',
-        }}
-      >
+    background: dark
+      ? 'linear-gradient(180deg, rgba(44,28,18,0.95), rgba(36,22,14,0.97))'
+      : 'linear-gradient(180deg, rgba(255,248,241,0.98), rgba(250,243,236,0.98))',
+    borderColor: dark ? 'rgba(192,142,100,0.16)' : 'rgba(163, 113, 82, 0.15)',
+    transform,
+    boxShadow: shadow,
+    transformStyle: 'preserve-3d',
+  }}
+  >
         <div
           className="pointer-events-none absolute left-0 top-[25%] -translate-y-1/2"
           style={{
@@ -115,13 +125,13 @@ function TiltVolunteerCard({
           }}
         >
           <Icon
-            size={100}
-            strokeWidth={1.9}
-            style={{
-              color: iconColor,
-              filter: `drop-shadow(0 10px 16px ${shadowHover})`,
-            }}
-          />
+  size={100}
+  strokeWidth={1.9}
+  style={{
+    color: dark ? darkColor : iconColor,
+    filter: `drop-shadow(0 10px 16px ${dark ? darkColor : iconColor}40)`,
+  }}
+/>
         </div>
 
         <div className="pl-12 md:pl-14" style={{ transform: 'translateZ(24px)' }}>
@@ -147,6 +157,7 @@ export default function VolunteerSection() {
   const [submitted, setSubmitted] = useState(false)
   const [selectOpen, setSelectOpen] = useState(false)
   const [selectedInterest, setSelectedInterest] = useState('')
+    const { dark } = useTheme()
 
   const selectRef = useRef(null)
 
@@ -221,14 +232,15 @@ const leftCardReveal = {
 }
 
   return (
-    <section
-      id="volunteer"
-      className="section-padding volunteer-main-section"
-      style={{
-        background:
-          'radial-gradient(circle at 8% 20%, rgba(139,90,60,0.08), transparent 22%), radial-gradient(circle at 92% 78%, rgba(255,89,44,0.10), transparent 20%), linear-gradient(180deg, rgba(248,241,232,0.75), rgba(255,248,241,0.96))',
-      }}
-    >
+   <section
+  id="volunteer"
+  className="section-padding volunteer-main-section"
+  style={{
+    background: dark
+      ? 'radial-gradient(circle at 8% 20%, rgba(80,45,25,0.18), transparent 22%), radial-gradient(circle at 92% 78%, rgba(120,55,20,0.14), transparent 20%), linear-gradient(180deg, #1e120c, #221510)'
+      : 'radial-gradient(circle at 8% 20%, rgba(139,90,60,0.08), transparent 22%), radial-gradient(circle at 92% 78%, rgba(255,89,44,0.10), transparent 20%), linear-gradient(180deg, rgba(248,241,232,0.75), rgba(255,248,241,0.96))',
+  }}
+>
       <img
         src="/vlntrh1.webp"
         alt=""
@@ -272,7 +284,7 @@ const leftCardReveal = {
           >
             {volunteerCards.map((card) => (
               <motion.div key={card.title} variants={leftCardReveal}>
-                <TiltVolunteerCard {...card} />
+                <TiltVolunteerCard {...card} dark={dark}/>
               </motion.div>
             ))}
           </motion.div>
@@ -286,18 +298,21 @@ const leftCardReveal = {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.08 }}
             style={{
-              background:
-                'linear-gradient(180deg, rgba(255,250,245,0.96), rgba(249,242,234,0.98))',
-              borderColor: 'rgba(163, 113, 82, 0.14)',
-              boxShadow: '0 18px 44px rgba(88, 52, 32, 0.08)',
-            }}
+  background: dark
+    ? 'linear-gradient(180deg, rgba(38,24,16,0.97), rgba(30,18,12,0.99))'
+    : 'linear-gradient(180deg, rgba(255,250,245,0.96), rgba(249,242,234,0.98))',
+  borderColor: dark ? 'rgba(192,142,100,0.16)' : 'rgba(163, 113, 82, 0.14)',
+  boxShadow: dark
+    ? '0 18px 44px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.05)'
+    : '0 18px 44px rgba(88, 52, 32, 0.08)',
+}}
           >
             <img
-              src="/brwn.png"
-              alt=""
-              aria-hidden="true"
-              className="volunteer-form-deco"
-            />
+  src={dark ? '/creme.png' : '/brwn.png'}
+  alt=""
+  aria-hidden="true"
+  className="volunteer-form-deco"
+/>
 
             {!submitted ? (
               <form onSubmit={handleSubmit(onSubmit)} className="relative z-[1] space-y-5">

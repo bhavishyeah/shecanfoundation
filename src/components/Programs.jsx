@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { GraduationCap, BriefcaseBusiness, HeartHandshake, Megaphone } from 'lucide-react'
+import { useInView } from 'react-intersection-observer'
+import { useTheme } from '../context/ThemeContext'
 import prgm1 from '../assets/prgm1.webp'
 import prgm2 from '../assets/prgm2.webp'
 import prgm3 from '../assets/prgm3.webp'
@@ -17,58 +19,41 @@ const programImages = [
   { src: prgm6, alt: 'Program activity 6' },
 ]
 
-const imageContainerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.08,
-    },
-  },
-}
-
-const imageCardVariants = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-    scale: 0.94,
-    filter: 'blur(8px)',
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.7,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  },
-}
-
 const programs = [
   {
     icon: GraduationCap,
+    color: '#FF592C',
+        darkColor: '#ff8a5b',      // bright orange
+
     title: 'Education',
     text: 'Helping women access learning, awareness, and opportunities that strengthen long-term independence.',
   },
   {
     icon: BriefcaseBusiness,
+    color: '#C06A35',
+        darkColor: '#f4a96a',      // golden peach
+
     title: 'Training & livelihood',
     text: 'Skill-building and practical support that improve employability and economic resilience.',
   },
   {
     icon: HeartHandshake,
+    color: '#805033',
+        darkColor: '#d4895a',      // soft terracotta
+
     title: 'Care & community support',
     text: 'Creating safe spaces, emotional support systems, and community-led initiatives that restore dignity.',
   },
   {
     icon: Megaphone,
+    color: '#491000',
+        darkColor: '#c47a4a',      // warm amber
+
     title: 'Advocacy & awareness',
     text: 'Driving conversations and action around equity, access, rights, and long-term social change.',
   },
 ]
-function TiltProgramCard({ icon: Icon, title, text }) {
+function TiltProgramCard({ icon: Icon, title, text, mobileActive, color, darkColor }) {
   const [transform, setTransform] = useState(
     'perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1)'
   )
@@ -78,32 +63,20 @@ function TiltProgramCard({ icon: Icon, title, text }) {
   const [shadow, setShadow] = useState(
     '0 14px 28px rgba(255, 89, 44, 0.08), 0 4px 10px rgba(255, 89, 44, 0.04)'
   )
+  const { dark } = useTheme()
 
   const handleMouseMove = (e) => {
     const card = e.currentTarget
     const rect = card.getBoundingClientRect()
-
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
-
     const centerX = rect.width / 2
     const centerY = rect.height / 2
-
     const rotateY = ((x - centerX) / centerX) * 2.5
     const rotateX = ((centerY - y) / centerY) * 2
-
-    setTransform(
-      `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.008)`
-    )
-
-    setIconTransform(
-      `translate3d(${rotateY * 1.6}px, ${-rotateX * 1.6}px, 0) rotate(${rotateY}deg) scale(1.04)`
-    )
-
-    setShadow(
-      `${rotateY * 3}px ${18 + Math.abs(rotateX * 2)}px 36px rgba(255, 89, 44, 0.14),
-       0 8px 18px rgba(255, 89, 44, 0.06)`
-    )
+    setTransform(`perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.008)`)
+    setIconTransform(`translate3d(${rotateY * 1.6}px, ${-rotateX * 1.6}px, 0) rotate(${rotateY}deg) scale(1.04)`)
+    setShadow(`${rotateY * 3}px ${18 + Math.abs(rotateX * 2)}px 36px rgba(255, 89, 44, 0.14), 0 8px 18px rgba(255, 89, 44, 0.06)`)
   }
 
   const handleMouseLeave = () => {
@@ -117,7 +90,7 @@ function TiltProgramCard({ icon: Icon, title, text }) {
       <div
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative rounded-[28px] border px-7 py-6 md:px-8 md:py-6 transition-transform duration-200 ease-out will-change-transform"
+        className={`about-card relative rounded-[28px] border px-7 py-6 md:px-8 md:py-6 transition-transform duration-200 ease-out will-change-transform${mobileActive ? ' about-card--active' : ''}`}
         style={{
           background: 'var(--color-surface)',
           borderColor: 'var(--color-border)',
@@ -127,7 +100,7 @@ function TiltProgramCard({ icon: Icon, title, text }) {
         }}
       >
         <div
-          className="absolute left-0 top-[25%] -translate-y-1/2 pointer-events-none"
+          className="absolute left-0 top-[25%] -translate-y-1/2 pointer-events-none about-card-icon"
           style={{
             transform: `translateX(-35%) translateY(-70%) ${iconTransform}`,
             transition: 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -136,13 +109,13 @@ function TiltProgramCard({ icon: Icon, title, text }) {
           }}
         >
           <Icon
-            size={92}
-            strokeWidth={1.9}
-            style={{
-              color: '#FF592C',
-              filter: 'drop-shadow(0 10px 16px rgba(255, 89, 44, 0.14))',
-            }}
-          />
+    size={92}
+    strokeWidth={1.9}
+    style={{
+      color: dark ? darkColor : color,
+      filter: `drop-shadow(0 10px 16px ${dark ? darkColor : color}40)`,
+    }}
+  />
         </div>
 
         <div className="pl-12 md:pl-14" style={{ transform: 'translateZ(24px)' }}>
@@ -152,7 +125,6 @@ function TiltProgramCard({ icon: Icon, title, text }) {
           >
             {title}
           </h3>
-
           <p
             className="max-w-2xl text-sm md:text-[15px] leading-relaxed"
             style={{ color: 'var(--color-text-muted)' }}
@@ -166,85 +138,105 @@ function TiltProgramCard({ icon: Icon, title, text }) {
 }
 
 export default function Programs() {
+  const [activeCard, setActiveCard] = useState(null)
+  const intervalRef = useRef(null)
+  const isTouchDevice = useRef(
+    typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches
+  )
+
+  const { ref: sectionRef, inView } = useInView({
+    threshold: 0.2,
+    triggerOnce: false,   // restart every time user scrolls back
+  })
+
+  useEffect(() => {
+    if (!isTouchDevice.current) return
+
+    if (inView) {
+      let index = 0
+      setActiveCard(0)
+      intervalRef.current = setInterval(() => {
+        index = (index + 1) % programs.length
+        setActiveCard(index)
+      }, 1800)
+    } else {
+      clearInterval(intervalRef.current)
+      setActiveCard(null)
+    }
+
+    return () => clearInterval(intervalRef.current)
+  }, [inView])
+
   return (
-    <section id="programs" className="section-padding pt-14 md:pt-20">
+    <section ref={sectionRef} id="programs" className="section-padding pt-14 md:pt-20">
       <div className="container-wide">
         <div className="max-w-4xl mb-12 md:mb-16">
           <span className="section-tag mb-5">What We Do</span>
-
           <h2 className="max-w-[700px] mb-5 text-5xl md:text-7xl font-semibold leading-none">
             Thoughtful programs. Real community impact.
           </h2>
-
-         <p
-          className="max-w-[550px] text-base md:text-lg leading-relaxed"
-          style={{ color: 'var(--color-text-muted)' }}
-        >
-          Our work is shaped by dignity, relevance and long-term change, not one-time gestures.
-        </p>
-                </div>
-
-                <div className="grid gap-10 xl:grid-cols-[1.05fr_0.95fr] xl:items-start">
-                  {/* Left cards list */}
-                  <div className="space-y-5">
-                  {programs.map((card) => (
-                    <TiltProgramCard key={card.title} {...card} />
-                  ))}
-                </div>
-
-          {/* Right zig-zag images */}
-            <div className="grid grid-cols-2 gap-5 md:gap-6 xl:pl-6 xl:-mt-24">
-  {programImages.map(({ src, alt }, index) => {
-    const imageTransforms = [
-      'rotate(-6deg) translateY(4px)',
-      'rotate(-6deg) translateY(28px)',
-      'rotate(-6deg) translateY(6px)',
-      'rotate(-6deg) translateY(28px)',
-      'rotate(-6deg) translateY(8px)',
-      'rotate(-6deg) translateY(30px)',
-    ]
-
-    return (
-      <motion.div
-        key={alt}
-        initial={{ opacity: 0, y: 42, scale: 0.94, filter: 'blur(8px)' }}
-        whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-        viewport={{ once: true, amount: 0.5 }}
-        transition={{
-          duration: 0.7,
-          delay: index * 0.04,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-        whileHover={{
-          y: -6,
-          scale: 1.03,
-          transition: {
-            duration: 0.28,
-            ease: [0.16, 1, 0.3, 1],
-          },
-        }}
-      >
-        <div
-          className="overflow-hidden rounded-[34px]"
-          style={{
-            transform: imageTransforms[index],
-            boxShadow: '0 20px 36px rgba(80, 40, 10, 0.12)',
-            background: 'var(--color-surface)',
-          }}
-        >
-          <img
-            src={src}
-            alt={alt}
-            className="aspect-[1/1] w-full object-cover"
-            loading="lazy"
-          />
+          <p
+            className="max-w-[550px] text-base md:text-lg leading-relaxed"
+            style={{ color: 'var(--color-text-muted)' }}
+          >
+            Our work is shaped by dignity, relevance and long-term change, not one-time gestures.
+          </p>
         </div>
-      </motion.div>
-    )
-  })}
-  </div>
 
-</div>
+        <div className="grid gap-10 xl:grid-cols-[1.05fr_0.95fr] xl:items-start">
+
+          {/* Left — cards */}
+          <div className="space-y-5">
+            {programs.map((card, i) => (
+              <TiltProgramCard
+                key={card.title}
+                {...card}
+                mobileActive={activeCard === i}
+              />
+            ))}
+          </div>
+
+          {/* Right — zig-zag images */}
+          <div className="grid grid-cols-2 gap-5 md:gap-6 xl:pl-6 xl:-mt-24">
+            {programImages.map(({ src, alt }, index) => {
+              const imageTransforms = [
+                'rotate(-6deg) translateY(4px)',
+                'rotate(-6deg) translateY(28px)',
+                'rotate(-6deg) translateY(6px)',
+                'rotate(-6deg) translateY(28px)',
+                'rotate(-6deg) translateY(8px)',
+                'rotate(-6deg) translateY(30px)',
+              ]
+              return (
+                <motion.div
+                  key={alt}
+                  initial={{ opacity: 0, y: 42, scale: 0.94, filter: 'blur(8px)' }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{ duration: 0.7, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
+                  whileHover={{ y: -6, scale: 1.03, transition: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } }}
+                >
+                  <div
+                    className="overflow-hidden rounded-[34px]"
+                    style={{
+                      transform: imageTransforms[index],
+                      boxShadow: '0 20px 36px rgba(80, 40, 10, 0.12)',
+                      background: 'var(--color-surface)',
+                    }}
+                  >
+                    <img
+                      src={src}
+                      alt={alt}
+                      className="aspect-[1/1] w-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+
+        </div>
       </div>
     </section>
   )
